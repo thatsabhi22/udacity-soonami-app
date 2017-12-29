@@ -40,12 +40,23 @@ import java.text.SimpleDateFormat;
  */
 public class MainActivity extends AppCompatActivity {
 
-    /** Tag for the log messages */
+    /**
+     * Tag for the log messages
+     */
     public static final String LOG_TAG = MainActivity.class.getSimpleName();
 
-    /** URL to query the USGS dataset for earthquake information */
+    /**
+     * URL to query the USGS dataset for earthquake information
+     * This is a valid URL
+     */
     private static final String USGS_REQUEST_URL =
             "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=2014-01-01&endtime=2014-12-01&minmagnitude=7";
+
+    /**
+     * This is an invalid URL to testing response codes on HTTP Requests
+     */
+//    private static final String USGS_REQUEST_URL =
+//    "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=2014-01-01&endtime=2014-01-02asdfasdf";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -162,8 +173,14 @@ public class MainActivity extends AppCompatActivity {
                 urlConnection.setReadTimeout(10000 /* milliseconds */);
                 urlConnection.setConnectTimeout(15000 /* milliseconds */);
                 urlConnection.connect();
-                inputStream = urlConnection.getInputStream();
-                jsonResponse = readFromStream(inputStream);
+                int responseCode = urlConnection.getResponseCode();
+                if (responseCode == 200) {
+                    inputStream = urlConnection.getInputStream();
+                    jsonResponse = readFromStream(inputStream);
+                } else {
+                    jsonResponse = "";
+                }
+
             } catch (IOException e) {
                 // TODO: Handle the exception
             } finally {
